@@ -9,7 +9,7 @@ open class LoomProdPlugin : Plugin<Project> {
         LoomUtil.project = project
         MultiMCUtil.project = project
 
-        val multimcConfiguration = project.configurations.create("multimc")
+        val multimcConfiguration = project.configurations.create("multimcMod")
 //        LoomUtil.multimcConfiguration = multimcConfiguration
         MultiMCUtil.multimcConfiguration = multimcConfiguration
 
@@ -23,11 +23,9 @@ open class LoomProdPlugin : Plugin<Project> {
         )
         MultiMCUtil.multiMCExtension = multiMCExtension
 
-
-        val multiMCTask = project.tasks.create<MultiMCTask>("multimc")
-
-
         project.afterEvaluate {
+
+            val multiMCTask = project.tasks.create<MultiMCTask>("multimc")
 
         }
     }
