@@ -1,10 +1,14 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 // First, apply the publishing plugin
 plugins {
     id("com.gradle.plugin-publish") version "0.10.0"
     id("moe.nikky.persistentCounter") version "0.0.8-SNAPSHOT"
+    id("com.github.johnrengelman.shadow") version "4.0.4"
     `java-gradle-plugin`
     `kotlin-dsl`
     `maven-publish`
+    id("kotlinx-serialization") version "1.3.31"
 }
 
 val ver = "0.0.1"
@@ -31,6 +35,22 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
+    shadow("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.11.0")
+    shadow(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "1.2.1")
+}
+
+val shadowJar = tasks.getByName<ShadowJar>("shadowJar") {
+    mustRunAfter("jar")
+    archiveClassifier.set("")
+//    classifier = ""
+    configurations = listOf(
+        project.configurations.shadow.get()
+    )
+//    exclude("META-INF")
+}
+
+artifacts {
+    add("archives", shadowJar)
 }
 
 val pluginId = "moe.nikky.loom-production-env"
@@ -113,10 +133,11 @@ val javadocJar = tasks.create<Jar>("javadocJar") {
 publishing {
     publications {
         val default = create("default", MavenPublication::class.java) {
+            artifact(shadowJar)
             artifact(sourcesJar)
             artifact(javadocJar)
         }
-        if(isCI) {
+        if (isCI) {
             create("snapshot", MavenPublication::class.java) {
                 groupId = pluginId
                 artifactId = "$pluginId.gradle.plugin"

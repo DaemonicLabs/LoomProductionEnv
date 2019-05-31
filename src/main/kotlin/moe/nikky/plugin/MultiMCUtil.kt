@@ -1,10 +1,10 @@
 package moe.nikky.plugin
 
+import moe.nikky.plugin.extension.ProdExtension
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.logging.Logger
-import org.gradle.kotlin.dsl.get
 import java.io.File
 import java.util.SortedMap
 import kotlin.system.exitProcess
@@ -13,7 +13,7 @@ object MultiMCUtil {
     lateinit var project: Project
     val logger: Logger get() = project.logger
     lateinit var multimcConfiguration: Configuration
-    lateinit var multiMCExtension: MultiMCExtension
+    lateinit var extension: ProdExtension
 
     fun readCfg(cfgFile: File): SortedMap<String, String> =
         cfgFile.bufferedReader().useLines { lines ->
@@ -94,7 +94,7 @@ object MultiMCUtil {
     }
 
     val files: List<File>
-        get() = multiMCExtension.configurations.flatMap { configuration ->
+        get() = extension.multiMCExtension.configurations.flatMap { configuration ->
             configuration.resolvedConfiguration
             .getFiles {
                 !(it.group == "net.fabricmc" && it.name == "fabric-loader")

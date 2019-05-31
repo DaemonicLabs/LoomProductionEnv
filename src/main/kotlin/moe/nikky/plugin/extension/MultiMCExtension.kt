@@ -1,4 +1,4 @@
-package moe.nikky.plugin
+package moe.nikky.plugin.extension
 
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration

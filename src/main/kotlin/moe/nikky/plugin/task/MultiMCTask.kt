@@ -1,5 +1,11 @@
-package moe.nikky.plugin
+package moe.nikky.plugin.task
 
+import kotlinx.coroutines.runBlocking
+import moe.nikky.plugin.LoomUtil
+import moe.nikky.plugin.MultiMCUtil
+import moe.nikky.plugin.extension.ProdExtension
+import moe.nikky.plugin.logErr
+import moe.nikky.plugin.logStdout
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.getByName
@@ -14,7 +20,8 @@ open class MultiMCTask : DefaultTask() {
 
     @TaskAction
     fun exec() {
-        val multiMCExtension: MultiMCExtension = project.extensions.getByName<MultiMCExtension>("multimc")
+        val extension: ProdExtension = project.extensions.getByName<ProdExtension>("production")
+        val multiMCExtension = extension.multiMCExtension
 
         // get yarn and loader version
         val yarn = LoomUtil.yarn
@@ -114,6 +121,11 @@ open class MultiMCTask : DefaultTask() {
             .start()
 
         logger.lifecycle("started multimc instance ${multiMCExtension.instanceName} $process")
+
+        runBlocking {
+            logStdout(process, logger)
+            logErr(process, logger)
+        }
         val status = process.waitFor()
         logger.lifecycle("multimc instance exited with code $status")
     }

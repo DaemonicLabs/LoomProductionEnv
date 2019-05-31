@@ -2,6 +2,12 @@ LoomProductionEnv
 
 requires gradle 5.+ (apparently?)
 
+## What does this do?
+
+task `multimc` sets up a new instance in multimc, installs fabric and copies your mod and dependencies over
+
+TODO: task `server` creates a dedicated server, installs fabric and mods and starts it
+
 ## setup
 
 **on windows** make sure that the `multimc` folder is added to `PATH` environment variable
@@ -22,29 +28,42 @@ plugins {
 }
 ```
 
-## tasks
-
-- `multimc` sets up and starts a multimc instance
-
 ## configuration
 
 ### extension
 
-the multimc instance can be configured using the `multimc` extension
+the production environments can be configured using the `multimc` extension
 
 ```kotlin
-multimc { ... }
+production {
+    mainjar = file(...)
+    multimc { ... }
+    server { ... }
+}
 ```
 
-the variables that can be modified in the extension include
+#### prodction
+
+```
+var mainJar: File = remapjar.ouput // expects a `File` pointing the the remapped jar
+```
+
+#### multimc
+
 ```
 var instanceId: String
 var instanceName: String
-var mainJar: File = remapjar.ouput // expects a `File` pointing the the remapped jar
 var configurations: MutableList<Configuration>  // configurations that will copy dependencies into the multimc instance
 ```
 
-### dependnecies
+#### server
+
+```
+var workingDirectory: File //
+var configurations: MutableList<Configuration>  // configurations that will copy dependencies into the multimc instance
+```
+
+### dependencies
 
 adding dependencies to `multimcMod` will copy them into the instances mods folder
 
@@ -52,6 +71,6 @@ adding dependencies to `multimcMod` will copy them into the instances mods folde
 dependencies {
    //...
    
-   multimcMod("io.github.prospector.modmenu:ModMenu:+")
+   multimc("io.github.prospector.modmenu:ModMenu:+")
 }
 ```
