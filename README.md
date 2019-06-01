@@ -59,7 +59,10 @@ var configurations: MutableList<Configuration>  // configurations that will copy
 #### server
 
 ```
-var workingDirectory: File //
+var workingDirectory: File
+var Xmx: String // example: 4048M
+var gui: Boolean
+var extraArguments: MutableList<String> // extra server launch arguments
 var configurations: MutableList<Configuration>  // configurations that will copy dependencies into the multimc instance
 ```
 
@@ -72,5 +75,8 @@ dependencies {
    //...
    
    multimc("io.github.prospector.modmenu:ModMenu:+")
+   
+   
+   server("group:artifactID:version")
 }
 ```

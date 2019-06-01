@@ -20,6 +20,15 @@ open class ServerExtension(
      */
     var workingDirectory = project.file("runServer")
 
+    /**
+     * max memory
+     */
+    var Xmx: String = "${1024 * 4}M"
+
+    var gui: Boolean = true
+
+    var extraArguments: MutableList<String> = mutableListOf()
+
     // TODO: grab latest installer version from:
     //  https://maven.modmuss50.me/net/fabricmc/fabric-installer/maven-metadata.xml
     private var installerVersionProperty: String? = null

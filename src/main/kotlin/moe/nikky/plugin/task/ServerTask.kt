@@ -94,26 +94,20 @@ open class ServerTask : DefaultTask() {
             "-dir", serverRoot.absolutePath,
             "-mappings", yarn,
             "-loader", loaderVersion
-        ).also {
-            logger.lifecycle("executing: ${it.command().joinToString(" ")}")
-        }
+        )
             .directory(serverRoot)
             .redirectOutput(ProcessBuilder.Redirect.PIPE)
-            .redirectError(ProcessBuilder.Redirect.PIPE)
+            .redirectError(ProcessBuilder.Redirect.PIPE).also {
+                logger.lifecycle("executing: ${it.command().joinToString(" ")}")
+            }
             .start()
 
-        runBlocking {
+        val status = runBlocking {
             logStdout(installProcess, logger)
             logErr(installProcess, logger)
+            installProcess.waitFor()
         }
-//        process.inputStream.bufferedReader().lines().forEach { line ->
-//            logger.lifecycle(line)
-//        }
-//        process.errorStream.bufferedReader().lines().forEach { line ->
-//            logger.lifecycle(line)
-//        }
 
-        val status = installProcess.waitFor()
         logger.lifecycle("server instance exited with code $status")
 
         val fabricServerLaunch = serverRoot.resolve("fabric-server-launch.jar")
@@ -141,7 +135,12 @@ open class ServerTask : DefaultTask() {
         val serverProcess = ProcessBuilder(
             "java",
             "-jar",
-            fabricServerLaunch.absolutePath
+            fabricServerLaunch.absolutePath,
+            *listOfNotNull(
+                "-Xmx${serverExtension.Xmx}",
+                if(serverExtension.gui) null else "--nogui"
+            ).toTypedArray(),
+            *serverExtension.extraArguments.toTypedArray()
         // TODO: extra args
         ).also {
             logger.lifecycle("executing: ${it.command().joinToString(" ")}")
@@ -151,11 +150,11 @@ open class ServerTask : DefaultTask() {
             .redirectError(ProcessBuilder.Redirect.PIPE)
             .start()
 
-        runBlocking {
+        val serverStatus = runBlocking {
             logStdout(serverProcess, logger)
             logErr(serverProcess, logger)
+            serverProcess.waitFor()
         }
-        val serverStatus = serverProcess.waitFor()
 
         logger.lifecycle("server exited with status code: $serverStatus")
     }

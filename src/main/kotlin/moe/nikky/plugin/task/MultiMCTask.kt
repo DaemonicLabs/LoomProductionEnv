@@ -49,7 +49,7 @@ open class MultiMCTask : DefaultTask() {
             "http://fabricmc.net/download/multimc/?yarn=${yarn}&loader=${loaderVersion}&format=patchJson".replace("+", "%2B")
         logger.lifecycle("downloading: $fabricPatchUrl")
         val jsonPatch = URL(fabricPatchUrl).readText()
-        logger.lifecycle("patch: $jsonPatch")
+        logger.info("patch: $jsonPatch")
 
         // TODO: create multimc instance or update
         val instanceDir = instancesDir.resolve(multiMCExtension.instanceId)
@@ -122,11 +122,11 @@ open class MultiMCTask : DefaultTask() {
 
         logger.lifecycle("started multimc instance ${multiMCExtension.instanceName} $process")
 
-        runBlocking {
+        val status = runBlocking {
             logStdout(process, logger)
             logErr(process, logger)
+            process.waitFor()
         }
-        val status = process.waitFor()
         logger.lifecycle("multimc instance exited with code $status")
     }
 }
