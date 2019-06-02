@@ -26,16 +26,19 @@ val buildNumber = counter.variable(id = "buildNumber", key = ver + branch)
 val isCI = System.getenv("BUILD_NUMBER") != null
 
 group = "moe.nikky"
-version = ver + if (isCI) "-$buildNumber" else "-dev"
+version = ver + if (isCI) "-SNAPSHOT" else "-dev"
+val versionSuffix = if (isCI) buildNumber else "dev"
 
 constants {
     constantsObject(pkg = "moe.nikky.plugin", className = "Const") {
-        field("VERSION") value version.toString()
+        field("VERSION") value "$ver-$versionSuffix"
     }
 }
 
+//val cleanGenerateConstants = tasks.getByName("")
 val generateConstants by tasks.getting(GenerateConstantsTask::class) {
     kotlin.sourceSets["main"].kotlin.srcDir(outputFolder)
+    outputs.upToDateWhen { false }
 }
 
 // TODO depend on kotlin tasks in the plugin ?
@@ -158,27 +161,10 @@ val javadocJar = tasks.create<Jar>("javadocJar") {
 
 publishing {
     publications {
-        val default = create("default", MavenPublication::class.java) {
+        create("main", MavenPublication::class.java) {
             artifact(shadowJar)
             artifact(sourcesJar)
             artifact(javadocJar)
-        }
-        if (isCI) {
-            create("snapshot", MavenPublication::class.java) {
-                groupId = pluginId
-                artifactId = "$pluginId.gradle.plugin"
-                version = "$ver-SNAPSHOT"
-
-                pom.withXml {
-                    asNode().appendNode("dependencies").apply {
-                        appendNode("dependency").apply {
-                            appendNode("groupId", default.groupId)
-                            appendNode("artifactId", default.artifactId)
-                            appendNode("version", default.version)
-                        }
-                    }
-                }
-            }
         }
     }
     repositories {
