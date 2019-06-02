@@ -27,7 +27,8 @@ open class ServerExtension(
 
     var gui: Boolean = true
 
-    var extraArguments: MutableList<String> = mutableListOf()
+    var jvmArgs: MutableList<String> = mutableListOf()
+    var arguments: MutableList<String> = mutableListOf()
 
     // TODO: grab latest installer version from:
     //  https://maven.modmuss50.me/net/fabricmc/fabric-installer/maven-metadata.xml

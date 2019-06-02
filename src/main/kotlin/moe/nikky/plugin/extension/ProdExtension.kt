@@ -1,5 +1,6 @@
 package moe.nikky.plugin.extension
 
+import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.plugins.BasePluginConvention
@@ -13,16 +14,16 @@ open class ProdExtension(
 ) {
     internal val multiMCExtension: MultiMCExtension =
         MultiMCExtension(project, multimcConfiguration)
-    fun multimc(configure: MultiMCExtension.() -> Unit = {}): MultiMCExtension {
+    fun multimc(configure: Action<MultiMCExtension>): MultiMCExtension {
         return multiMCExtension.apply {
-            configure()
+            configure.execute(this)
         }
     }
     internal val serverExtension: ServerExtension =
         ServerExtension(project, serverConfiguration)
-    fun server(configure: ServerExtension.() -> Unit = {}): ServerExtension {
+    fun server(configure: Action<ServerExtension>): ServerExtension {
         return serverExtension.apply {
-            configure()
+            configure.execute(this)
         }
     }
 
