@@ -135,10 +135,10 @@ open class ServerTask : DefaultTask() {
         val serverProcess = ProcessBuilder(
             "java",
             *serverExtension.jvmArgs.toTypedArray(),
+            "-Xmx${serverExtension.Xmx}",
             "-jar",
             fabricServerLaunch.absolutePath,
             *listOfNotNull(
-                "-Xmx${serverExtension.Xmx}",
                 if(serverExtension.gui) null else "--nogui"
             ).toTypedArray(),
             *serverExtension.arguments.toTypedArray()
