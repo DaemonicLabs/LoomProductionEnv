@@ -9,6 +9,7 @@ import org.gradle.kotlin.dsl.create
 
 open class LoomProdPlugin : Plugin<Project> {
     override fun apply(project: Project) {
+        project.logger.lifecycle("Loom Prod Env: ${Const.VERSION}")
         LoomUtil.project = project
         MultiMCUtil.project = project
 

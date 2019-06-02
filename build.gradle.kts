@@ -1,4 +1,6 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import plugin.GenerateConstantsTask
 
 // First, apply the publishing plugin
 plugins {
@@ -9,6 +11,7 @@ plugins {
     `kotlin-dsl`
     `maven-publish`
     id("kotlinx-serialization") version "1.3.31"
+    constantsGenerator
 }
 
 val ver = "0.0.1"
@@ -25,6 +28,21 @@ val isCI = System.getenv("BUILD_NUMBER") != null
 group = "moe.nikky"
 version = ver + if (isCI) "-$buildNumber" else "-dev"
 
+constants {
+    constantsObject(pkg = "moe.nikky.plugin", className = "Const") {
+        field("VERSION") value version.toString()
+    }
+}
+
+val generateConstants by tasks.getting(GenerateConstantsTask::class) {
+    kotlin.sourceSets["main"].kotlin.srcDir(outputFolder)
+}
+
+// TODO depend on kotlin tasks in the plugin ?
+tasks.withType<KotlinCompile> {
+    dependsOn(generateConstants)
+}
+
 // If your plugin has any external java dependencies, Gradle will attempt to
 // download them from JCenter for anyone using the plugins DSL
 // so you should probably use JCenter for dependency resolution in your own
@@ -35,8 +53,16 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    shadow("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.11.0")
-    shadow(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "1.2.1")
+    shadow(
+        group = "org.jetbrains.kotlinx",
+        name = "kotlinx-serialization-runtime",
+        version = "0.11.0"
+    )
+    shadow(
+        group = "org.jetbrains.kotlinx",
+        name = "kotlinx-coroutines-core",
+        version = "1.2.1"
+    )
 }
 
 val shadowJar = tasks.getByName<ShadowJar>("shadowJar") {
