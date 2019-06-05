@@ -12,6 +12,7 @@ import kotlinx.serialization.json.JsonConfiguration
 import moe.nikky.plugin.MultiMCUtil
 import moe.nikky.plugin.PackageVersion
 import moe.nikky.plugin.VersionManifest
+import moe.nikky.plugin.contains
 import moe.nikky.plugin.logErr
 import moe.nikky.plugin.logStdout
 import org.gradle.api.GradleException
@@ -120,6 +121,8 @@ open class ServerTask : DefaultTask() {
             configuration.resolvedConfiguration
                 .getFiles {
                     !(it.group == "net.fabricmc" && it.name == "fabric-loader")
+                }.filter {
+                    it.contains("fabric.mod.json")
                 }
         }
         logger.lifecycle("mods:")

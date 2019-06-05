@@ -3,6 +3,7 @@ package moe.nikky.plugin
 import moe.nikky.plugin.extension.ProdExtension
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.api.Project
+//import org.gradle.api.file.
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.logging.Logger
 import java.io.File
@@ -52,7 +53,7 @@ object MultiMCUtil {
             Os.isFamily(Os.FAMILY_UNIX) -> {
                 val location = "which multimc".runCommand().replace("\n", "")
                 logger.lifecycle("location: '$location'")
-                if(File(location).exists()) {
+                if (File(location).exists()) {
                     "multimc"
                 } else {
                     File(System.getProperty("user.home"))
@@ -96,9 +97,10 @@ object MultiMCUtil {
     val files: List<File>
         get() = extension.multiMCExtension.configurations.flatMap { configuration ->
             configuration.resolvedConfiguration
-            .getFiles {
-                !(it.group == "net.fabricmc" && it.name == "fabric-loader")
-            }
+                .getFiles {
+                    !(it.group == "net.fabricmc" && it.name == "fabric-loader")
+                }.filter {
+                    it.contains("fabric.mod.json")
+                }
         }
-
 }
