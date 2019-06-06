@@ -131,6 +131,12 @@ open class ServerTask : DefaultTask() {
             val targetFile = modsDir.resolve(it.name)
             it.copyTo(targetFile, overwrite = true)
         }
+        val mainJar = extension.mainJar
+        // remapJar.output
+        logger.lifecycle("main mod: ${mainJar}")
+        val targetFile = modsDir.resolve(mainJar.name)
+        mainJar.copyTo(targetFile, overwrite = true)
+
 
         val eulaFile = serverRoot.resolve("eula.txt")
         eulaFile.writeText("eula=true\n")
