@@ -13,16 +13,20 @@ import java.io.File
 import java.net.URL
 
 open class MultiMCTask : DefaultTask() {
+    val extension: ProdExtension = project.extensions.getByName<ProdExtension>("production")
+    val multiMCExtension = extension.multiMCExtension
+
     init {
         group = "prodenv"
         description = "MultiMC production environment"
+
+        extension.buildTasks.forEach {
+            dependsOn(it)
+        }
     }
 
     @TaskAction
     fun exec() {
-        val extension: ProdExtension = project.extensions.getByName<ProdExtension>("production")
-        val multiMCExtension = extension.multiMCExtension
-
         // get yarn and loader version
         val yarn = LoomUtil.yarn
         logger.lifecycle("yarn: $yarn")

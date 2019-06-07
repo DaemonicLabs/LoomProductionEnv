@@ -19,9 +19,16 @@ import org.gradle.api.GradleException
 import java.io.File
 
 open class ServerTask : DefaultTask() {
+    val extension: ProdExtension = project.extensions.getByName<ProdExtension>("production")
+    val serverExtension = extension.serverExtension
+
     init {
         group = "prodenv"
         description = "Server production environment"
+
+        extension.buildTasks.forEach {
+            dependsOn(it)
+        }
     }
 
     private val files: List<File>
@@ -34,8 +41,6 @@ open class ServerTask : DefaultTask() {
 
     @TaskAction
     fun exec() {
-        val extension: ProdExtension = project.extensions.getByName<ProdExtension>("production")
-        val serverExtension = extension.serverExtension
 
         // get yarn and loader version
         val yarn = LoomUtil.yarn

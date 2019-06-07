@@ -2,6 +2,7 @@ package moe.nikky.plugin.extension
 
 import org.gradle.api.Action
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.plugins.BasePluginConvention
 import org.gradle.kotlin.dsl.getPluginByName
@@ -39,4 +40,6 @@ open class ProdExtension(
         set(value) {
             mainJarProperty = value
         }
+
+    val buildTasks: MutableList<Task> = mutableListOf()
 }
